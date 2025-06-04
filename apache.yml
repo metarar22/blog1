@@ -1,16 +1,29 @@
 - hosts: all
-  become: True
+  become: true
   tasks:
-    - name: Install packages
+    - name: Activer nginx via amazon-linux-extras
+      shell: amazon-linux-extras enable nginx1
+      args:
+        creates: /etc/yum.repos.d/amzn2extra-nginx1.repo
+
+    - name: Mettre à jour la liste des paquets
       yum:
-        name: "nginx"
-        state: "present"
-    - name: Start nginx server
+        name: "*"
+        state: latest
+
+    - name: Installer nginx
+      yum:
+        name: nginx
+        state: present
+
+    - name: Démarrer nginx
       service:
         name: nginx
         state: started
-        enabled: True
-    - name: Deploy static website
+        enabled: true
+
+    - name: Déployer un fichier HTML statique
       copy:
-        src: index.html # We have define a html page 
-        dest: /var/www/html/
+        src: index.html
+        dest: /usr/share/nginx/html/index.html
+
